@@ -235,6 +235,8 @@ AIC(ga1, gg1, gig1,
 
 
 # Comparando los 3 mejores modelos ----------------------------------------
+
+# Wp, FIGURA 5
 par(mfrow=c(1, 3), bg='white')
 wp(gg2)
 title("Gamma generalizada (GG)")
@@ -243,7 +245,8 @@ title("Gamma (GA)")
 wp(gig2)
 title("Inversa gausiana generalizada (GIG)")
 
-AIC(gg2, ga2, gig2, k=log(nrow(datos)))  # Para obtener SBC
+# Calculando los SBC
+AIC(gg2, ga2, gig2, k=log(nrow(datos)))
 
 
 # Best model --------------------------------------------------------------
@@ -251,7 +254,8 @@ wp(ga2)
 plot(ga2)
 summary(ga2)
 
-# Contornos para la media -------------------------------------------------
+
+# Contornos para la media, FIGURA 6 ---------------------------------------
 esp <- function(temp, tiempo) {
   x <- c(1, temp, temp^2, tiempo, ind)
   exp(sum(coef(ga2) * x))
@@ -275,7 +279,7 @@ contour(temp, tiem, z, las=1, lwd=2,
         xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
 
 
-# Contornos para la varianza ----------------------------------------------
+# Contornos para la varianza, FIGURA 7 ------------------------------------
 vari <- function(temp, tiempo) {
   x <- c(1, temp, temp^2, tiempo, ind)
   coefi <- c(27.072, -2.874, 0.076, 1.380, 1.476)
@@ -298,5 +302,7 @@ z <- outer(temp, tiem, vari)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
         xlab='Temperatura (°C)', ylab='Tiempo aireaciOn (horas)')
+
+#----------------------------FIN-------------------------------------------
 
 
