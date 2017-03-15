@@ -75,8 +75,6 @@ boxplot(produccion ~ cascara, las=1,
         ylab='Rendimiento de orellana (gr)', 
         xlab='Tipo de c?scara')
 
-
-
 # Aplicacion gamlss -------------------------------------------------------
 
 # Modelo horizonte
@@ -93,15 +91,6 @@ horizonte <- formula(~ cascara + PesoBolsa + Temperatura +
                        I(Humedad ^ 2) + 
                        I(Tiempo ^ 2))
 
-require(gamlss)
-
-# stepGAICALL.A se usa para obtener el mejor modelo
-# para cada uno de los par?metros de la distribuci?n elegida
-# se debe ingresar un modelo de partida y scopes para cada parametro
-# en forma de lista.
-# lower es el modelo m?s simple admitido
-# upper es la estructura del modelo m?s complejo admitido
-# sup es simplemente la f?rmula del m?s complejo
 
 ## Ajuste del modelo inicial con la distribucion EXP
 exp0 <- gamlss(produccion ~ 1, data=datos, family=EXP())
@@ -203,13 +192,13 @@ AIC(exp1,
 
 plot(bcpe1) # descartado
 
-# Solo los buenos
+# Solo los buenos modelos
 AIC(exp1,
     no1, ga1, ig1, wei31, pare1,
     bccg1, gg1, gig1, 
     bct1, k=log(nrow(datos)))
 
-# updating
+# Actualizando los mejores modelos
 
 ga2 <- update(object=ga1, formula=~Temperatura + I(Temperatura^2) +
               Tiempo + cascara, what = c("mu"),
@@ -227,12 +216,10 @@ gig2 <- gamlss(produccion ~ Temperatura + I(Temperatura^2) +
                nu.fo = ~ 1,
                data=datos, family=GIG())
 
-# Solo los modificados
+# Solo los actualizados
 AIC(ga1, gg1, gig1,
     ga2, gg2, gig2,
     k=log(nrow(datos)))
-
-
 
 # Comparando los 3 mejores modelos ----------------------------------------
 
@@ -248,12 +235,10 @@ title("Inversa gausiana generalizada (GIG)")
 # Calculando los SBC
 AIC(gg2, ga2, gig2, k=log(nrow(datos)))
 
-
 # Best model --------------------------------------------------------------
 wp(ga2)
 plot(ga2)
 summary(ga2)
-
 
 # Contornos para la media, FIGURA 6 ---------------------------------------
 esp <- function(temp, tiempo) {
@@ -278,7 +263,6 @@ contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
         xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
 
-
 # Contornos para la varianza, FIGURA 7 ------------------------------------
 vari <- function(temp, tiempo) {
   x <- c(1, temp, temp^2, tiempo, ind)
@@ -296,12 +280,12 @@ z <- outer(temp, tiem, vari)
 par(mfrow=c(1, 2))
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla entera',
-        xlab='Temperatura (°C)', ylab='Tiempo aireaciOn (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
 ind <- 1
 z <- outer(temp, tiem, vari)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
-        xlab='Temperatura (°C)', ylab='Tiempo aireaciOn (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
 
 #----------------------------FIN-------------------------------------------
 
