@@ -233,13 +233,9 @@ AIC(ga1, gg1, gig1,
     ga2, gg2, gig2,
     k=log(nrow(datos)))
 
-# Best model
-wp(ga2)
-plot(ga2)
-
-summary(ga2)
 
 
+# Comparando los 3 mejores modelos ----------------------------------------
 par(mfrow=c(1, 3), bg='white')
 wp(gg2)
 title("Gamma generalizada (GG)")
@@ -248,27 +244,15 @@ title("Gamma (GA)")
 wp(gig2)
 title("Inversa gausiana generalizada (GIG)")
 
+AIC(gg2, ga2, gig2, k=log(nrow(datos)))
 
+# Best model --------------------------------------------------------------
+wp(ga2)
+plot(ga2)
 summary(ga2)
 
 
-
-# Predicciones de mu ------------------------------------------------------
-ndt <- data.frame(Temperatura=c(21, 22, 25, 24), 
-                  Tiempo=c(4.5, 5.5, 6.5, 6), 
-                  cascara=c('Entera', 'Molida', 'Molida', 'Molida'))
-predict(ga2, newdata=ndt, what='mu')
-exp(predict(ga2, newdata=ndt, what='mu'))
-
-mu.est <- exp(predict(ga2, newdata=datos[, -1], what='mu'))
-plot(produccion, mu.est)
-abline(a=0, b=1)
-
-
-
-
 # Contornos para la media -------------------------------------------------
-
 esp <- function(temp, tiempo) {
   x <- c(1, temp, temp^2, tiempo, ind)
   exp(sum(coef(ga2) * x))
@@ -288,15 +272,15 @@ z <- outer(temp, tiem, esp)
 par(mfrow=c(1, 2))
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla entera',
-        xlab='Temperatura (?C)', ylab='Tiempo aireaci?n (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
 ind <- 1
 z <- outer(temp, tiem, esp)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
-        xlab='Temperatura (?C)', ylab='Tiempo aireaci?n (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
+
 
 # Contornos para la varianza ----------------------------------------------
-
 vari <- function(temp, tiempo) {
   x <- c(1, temp, temp^2, tiempo, ind)
   coefi <- c(27.072, -2.874, 0.076, 1.380, 1.476)
@@ -323,37 +307,5 @@ z <- outer(temp, tiem, vari)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
         xlab='Temperatura (?C)', ylab='Tiempo aireaci?n (horas)')
-
-
-# Residuales --------------------------------------------------------------
-
-par(mfrow=c(1, 2))
-qqnorm(residuals(ga2), main='')
-qqline(residuals(ga2))
-wp(ga2, xlim.all=2.5)
-
-
-r <- residuals(ga2)
-
-residuals(ga2, what='mu')
-residuals(ga2, what='sigma')
-residuals(ga2, what='z-scores')
-
-F <- ecdf(r)
-
-z <- F(r) - pnorm(r)
-
-
-cbind(F(r), pnorm(r), z)
-plot(z)
-qqnorm(z)
-
-qq <- as.data.frame(qqnorm(r))
-qq$y <- qq$y - qq$x
-plot(qq$x, qq$y, type = "n", 
-     ylim = c(-1.5, 1.5), 
-     lab = c(3, 5, 7), tck = -0.01)
-points(qq$x, qq$y, col = 1, pch = 1)
-wp(ga2, xlim.all=3)
 
 
