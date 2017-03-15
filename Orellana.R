@@ -6,7 +6,7 @@ attach(datos)
 
 # Analisis descriptivo ----------------------------------------------------
 
-# Densidad de la variable respuesta
+# Densidad de la variable respuesta, FIGURA 2
 plot(density(produccion), xlim=c(0, 3100), lwd=3,
      main='', ylab='Densidad', ylim=c(0, 0.0012),
      xlab='Rendimiento de orellana (gr)')
@@ -19,14 +19,14 @@ fit <- fitDist(produccion, data=datos, type="realplus")
 fit$fits
 fit
 
-# Graficos de las Distribuciones
+# Histograma y mejores ajustes con exp, wei, ga y pareto
 par(mfrow=c(2, 2))
 fitexp <- histDist(y=produccion, family=EXP, main="EXP")
 fitwei3 <- histDist(y=produccion, family=WEI3, main="WEI3")
 fitga <- histDist(y=produccion, family=GA, main="GA")
 fitpareto2 <- histDist(y=produccion, family=GA, main="PARETO2")
 
-# Mejorando los graficos anteriores
+# Mejorando los graficos anteriores, FIGURA 3
 par(mfrow=c(2, 2))
 hist(produccion,
      main=expression(paste("Exponencial(", mu, "=541.49)")),
@@ -57,7 +57,7 @@ curve(dPARETO2(x, mu=exp(fitpareto2$mu.coef),
 
 
 
-# Relacionando las variables ----------------------------------------------
+# Boxplots, FIGURA 4
 par(mfrow=c(2, 3))
 boxplot(produccion ~ Tiempo, las=1,
         ylab='Rendimiento de orellana (gr)', 
@@ -75,8 +75,9 @@ boxplot(produccion ~ cascara, las=1,
         ylab='Rendimiento de orellana (gr)', 
         xlab='Tipo de c?scara')
 
-# Aplicacion gamlss -------------------------------------------------------
 
+
+# Aplicacion gamlss -------------------------------------------------------
 
 # Modelo horizonte
 horizonte <- formula(~ cascara + PesoBolsa + Temperatura + 
@@ -120,7 +121,6 @@ ga1 <- stepGAICAll.A(ga0, trace=F,
                      scope=list(lower= ~ 1, upper=horizonte),
                      sigma.scope=list(lower= ~ 1, upper=horizonte))
 
-#??????????????????????????????
 ## Ajuste del modelo inicial con la distribucion LOGNO
 logno0 <- gamlss(produccion ~ 1, sigma.fo= ~ 1, data=datos, 
                  family=LOGNO(mu.link='log'))
@@ -128,7 +128,6 @@ logno1 <- stepGAICAll.A(logno0, trace=F,
                         scope=list(lower= ~ 1, upper=horizonte),
                         sigma.scope=list(lower= ~ 1, upper=horizonte))
 
-#??????????????????????????????
 ## Ajuste del modelo inicial con la distribucion IG
 ig0 <- gamlss(produccion ~ 1, sigma.fo= ~ 1, data=datos, family=IG())
 ig1 <- stepGAICAll.A(ig0, trace=F,
@@ -244,13 +243,13 @@ title("Gamma (GA)")
 wp(gig2)
 title("Inversa gausiana generalizada (GIG)")
 
-AIC(gg2, ga2, gig2, k=log(nrow(datos)))
+AIC(gg2, ga2, gig2, k=log(nrow(datos)))  # Para obtener SBC
+
 
 # Best model --------------------------------------------------------------
 wp(ga2)
 plot(ga2)
 summary(ga2)
-
 
 # Contornos para la media -------------------------------------------------
 esp <- function(temp, tiempo) {
@@ -258,10 +257,6 @@ esp <- function(temp, tiempo) {
   exp(sum(coef(ga2) * x))
 }
 esp <- Vectorize(esp)
-
-ind <- 1
-esp(temp=21, tiempo=5)
-
 
 k <- 100
 temp <- seq(from=19, to=24, length.out=k)
@@ -288,10 +283,6 @@ vari <- function(temp, tiempo) {
 }
 vari <- Vectorize(vari)
 
-ind <- 1
-vari(temp=21, tiempo=5)
-
-
 k <- 100
 temp <- seq(from=19, to=24, length.out=k)
 tiem <- seq(from=4, to=6, length.out=k)
@@ -301,11 +292,11 @@ z <- outer(temp, tiem, vari)
 par(mfrow=c(1, 2))
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla entera',
-        xlab='Temperatura (?C)', ylab='Tiempo aireaci?n (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireaciOn (horas)')
 ind <- 1
 z <- outer(temp, tiem, vari)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
-        xlab='Temperatura (?C)', ylab='Tiempo aireaci?n (horas)')
+        xlab='Temperatura (°C)', ylab='Tiempo aireaciOn (horas)')
 
 
