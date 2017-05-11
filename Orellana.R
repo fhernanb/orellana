@@ -251,13 +251,13 @@ k <- 100
 temp <- seq(from=19, to=24, length.out=k)
 tiem <- seq(from=4, to=6, length.out=k)
 
-ind <- 0
+ind <- 0 # Si es cascarilla entera
 z <- outer(temp, tiem, esp)
 par(mfrow=c(1, 2))
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla entera',
         xlab='Temperatura (°C)', ylab='Tiempo aireacion (horas)')
-ind <- 1
+ind <- 1 # Si es cascarilla molida
 z <- outer(temp, tiem, esp)
 contour(temp, tiem, z, las=1, lwd=2,
         main='Cascarilla molida',
